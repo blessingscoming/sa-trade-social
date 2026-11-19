@@ -1,0 +1,16 @@
+# access tokens — never commit
+telegraph-tokens.txt
+.env
+*.token
+
+# commercially sensitive — this repo is PUBLIC so Actions minutes are free and
+# raw.githubusercontent can serve the post images. These two must not be:
+# they hold your rate cards, margins, buyer strategy and the 90-day plan.
+MONEY-STACK.md
+leadbuyers.mjs
+out/_leadbuyers/
+
+# scratch
+.render/
+node_modules/
+*.log

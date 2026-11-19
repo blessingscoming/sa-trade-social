@@ -1,0 +1,725 @@
+{
+  "_README": "Single source of truth for the social engine. brands.json (../_BRAND) supplies colour + glyph + tagline; this file supplies the marketing layer: bios, hashtags, CTAs, trade-specific angle banks and per-platform rules. engine.mjs merges the two with each site's real services.json + geo-meta.json.",
+  "network": {
+    "owner": "SA Trade Network",
+    "market": "Gauteng, South Africa",
+    "currency": "R",
+    "timezone": "Africa/Johannesburg",
+    "whatsapp": "REPLACE_WITH_27XXXXXXXXX",
+    "quoteUtm": "?utm_source={channel}&utm_medium=social&utm_campaign=daily",
+    "voiceRules": [
+      "Prices are bands, never promises. Always say 'about' or 'from'.",
+      "Never claim a job we have not done. No fake reviews, no fake before/after.",
+      "One ask per post. Quote, WhatsApp or call — not all three.",
+      "Local proof beats adjectives: name the suburb, name the price, name what is included.",
+      "No emoji walls. Max two per post."
+    ]
+  },
+  "platforms": {
+    "telegraph": {
+      "needsAuth": false,
+      "kind": "longform",
+      "perDay": 2,
+      "note": "telegra.ph — no signup. Indexable, instant, good for service x suburb longform."
+    },
+    "writeas": {
+      "needsAuth": false,
+      "kind": "longform",
+      "perDay": 1,
+      "note": "write.as anonymous post. Free backlink."
+    },
+    "telegram": {
+      "needsAuth": true,
+      "kind": "short",
+      "perDay": 3,
+      "env": [
+        "TELEGRAM_BOT_TOKEN",
+        "TELEGRAM_CHAT_ID"
+      ],
+      "note": "Free bot API. Your own channel = owned audience + RSS bridge."
+    },
+    "devto": {
+      "needsAuth": true,
+      "kind": "longform",
+      "perDay": 1,
+      "env": [
+        "DEVTO_API_KEY"
+      ],
+      "note": "Only for webdesignexpertssa content. Off-niche for trades."
+    },
+    "reddit": {
+      "needsAuth": true,
+      "kind": "short",
+      "perDay": 1,
+      "env": [
+        "REDDIT_CLIENT_ID",
+        "REDDIT_CLIENT_SECRET",
+        "REDDIT_USERNAME",
+        "REDDIT_PASSWORD"
+      ],
+      "note": "Value-first. Links only in r/southafrica-adjacent subs where allowed and after 2+ weeks of real comments."
+    },
+    "facebook": {
+      "needsAuth": true,
+      "kind": "short",
+      "perDay": 2,
+      "env": [
+        "FB_PAGE_ID",
+        "FB_PAGE_TOKEN"
+      ],
+      "note": "THE channel for SA trades. Page post + photo. Graph API, free."
+    },
+    "instagram": {
+      "needsAuth": true,
+      "kind": "image",
+      "perDay": 1,
+      "env": [
+        "IG_USER_ID",
+        "FB_PAGE_TOKEN"
+      ],
+      "note": "IG Business via Graph API. Needs a public image URL — host the asset pack on the site itself."
+    },
+    "pinterest": {
+      "needsAuth": true,
+      "kind": "image",
+      "perDay": 3,
+      "env": [
+        "PINTEREST_TOKEN",
+        "PINTEREST_BOARD_ID"
+      ],
+      "note": "Underrated for SA home services. 1000x1500 pins, keyword-rich."
+    },
+    "x": {
+      "needsAuth": true,
+      "kind": "short",
+      "perDay": 2,
+      "env": [
+        "X_API_KEY",
+        "X_API_SECRET",
+        "X_ACCESS_TOKEN",
+        "X_ACCESS_SECRET"
+      ],
+      "note": "Free tier = 500 posts/month write. Budget it across 8 brands."
+    },
+    "gbp": {
+      "needsAuth": false,
+      "kind": "export",
+      "perDay": 1,
+      "note": "Google Business Profile has no free write API without approval. Engine exports a paste-ready daily file — 60 seconds of manual paste, highest-converting channel for local trades. Do not skip this one."
+    }
+  },
+  "archetypes": {
+    "price": {
+      "weight": 5,
+      "note": "Real priceBand + suburb. Highest-intent, highest-save content."
+    },
+    "checklist": {
+      "weight": 4,
+      "note": "What to check before booking."
+    },
+    "mistake": {
+      "weight": 3,
+      "note": "What goes wrong and what it costs."
+    },
+    "suburb": {
+      "weight": 3,
+      "note": "Geo profile + the service that suburb actually needs."
+    },
+    "faq": {
+      "weight": 3,
+      "note": "One real question, one straight answer."
+    },
+    "compare": {
+      "weight": 2,
+      "note": "Two options, two price bands, when each wins."
+    },
+    "seasonal": {
+      "weight": 2,
+      "note": "SA season / load-shedding / hail / water restriction hooks."
+    },
+    "offer": {
+      "weight": 1,
+      "note": "Direct quote ask. Max 1 in 8 posts."
+    }
+  },
+  "seasons": {
+    "1": "peak heat and afternoon thunderstorms",
+    "2": "late summer storms and hail risk",
+    "3": "end of summer, pre-winter servicing window",
+    "4": "cooler mornings, autumn maintenance window",
+    "5": "start of winter, heating and insulation season",
+    "6": "mid-winter, frost and geyser-failure season",
+    "7": "coldest month, peak electricity bills",
+    "8": "dry windy month, dust and fire risk",
+    "9": "spring, the busiest booking month of the year",
+    "10": "first storms and hail season opening",
+    "11": "storm and hail season, pool and roof demand peak",
+    "12": "festive shutdown, December rush and January backlog"
+  },
+  "brands": {
+    "sasolarhub.co.za": {
+      "handle": "sasolarhub",
+      "bioShort": "Solar + inverters + lithium batteries, Gauteng. Prices published before you book.",
+      "bioLong": "Solar installation, inverter and lithium battery supply across Johannesburg and Pretoria. We publish price bands for every system size so you can budget before anyone visits. Free quote, no call-centre.",
+      "cta": "Get your solar quote",
+      "hashtags": [
+        "#SolarSouthAfrica",
+        "#SolarGauteng",
+        "#LoadSheddingSolution",
+        "#InverterInstall",
+        "#LithiumBattery",
+        "#SolarJohannesburg",
+        "#BackupPower",
+        "#Eskom",
+        "#SolarPanelsSA",
+        "#OffGridSA"
+      ],
+      "subreddits": [
+        "r/southafrica",
+        "r/SolarDIY",
+        "r/solar"
+      ],
+      "pinterestBoards": [
+        "Solar for SA homes",
+        "Backup power setups",
+        "Solar prices Gauteng"
+      ],
+      "seasonalHooks": {
+        "6": "winter is when undersized systems get exposed",
+        "7": "peak-tariff month — the month solar pays the most",
+        "11": "storm season: surge protection matters more than panel brand"
+      },
+      "mistakes": [
+        "buying panel wattage before sizing the inverter to the actual load",
+        "a lithium bank sized off a guess instead of a week of meter readings",
+        "no CoC after the install, which voids the household insurance claim",
+        "mounting on a roof that needed sheeting work first",
+        "a hybrid inverter wired without a proper changeover, so the geyser still trips it"
+      ],
+      "checks": [
+        "ask for the inverter model number and look up its real continuous rating",
+        "ask whether a CoC is issued and who signs it",
+        "get the battery warranty in cycles, not years",
+        "confirm who carries the roof-penetration waterproofing guarantee",
+        "ask for the system's kWh-per-day estimate in writing"
+      ],
+      "servicesFallback": [
+        {
+          "name": "3kW Solar Starter System",
+          "priceBand": "from about R55,000 installed",
+          "note": "lights, plugs, TV and Wi-Fi through load-shedding"
+        },
+        {
+          "name": "5kW Hybrid Solar System",
+          "priceBand": "from about R95,000 installed",
+          "note": "the common Gauteng family-home size"
+        },
+        {
+          "name": "8kW Solar System",
+          "priceBand": "from about R145,000 installed",
+          "note": "larger home, geyser and pool pump included"
+        },
+        {
+          "name": "10kW Three-Phase System",
+          "priceBand": "from about R210,000 installed",
+          "note": "big home or small business"
+        },
+        {
+          "name": "Inverter and Battery Backup Only",
+          "priceBand": "from about R38,000 installed",
+          "note": "no panels, just ride through load-shedding"
+        },
+        {
+          "name": "5kWh Lithium Battery Add-On",
+          "priceBand": "about R22,000 to R32,000 supplied and fitted",
+          "note": "extending an existing system"
+        },
+        {
+          "name": "Solar Geyser Conversion",
+          "priceBand": "about R18,000 to R28,000",
+          "note": "the cheapest kWh you will ever cut"
+        },
+        {
+          "name": "Solar Panel Cleaning and Service",
+          "priceBand": "about R850 to R1,600 per visit",
+          "note": "Highveld dust costs you real output"
+        },
+        {
+          "name": "Electrical CoC for Solar",
+          "priceBand": "about R1,500 to R3,500",
+          "note": "required by most household insurers"
+        },
+        {
+          "name": "Load Audit and System Sizing",
+          "priceBand": "about R950, credited against the install",
+          "note": "a week of real readings instead of a guess"
+        },
+        {
+          "name": "Generator to Inverter Changeover",
+          "priceBand": "about R12,000 to R25,000",
+          "note": "stop buying petrol at 2am"
+        },
+        {
+          "name": "Borehole Pump Solar Conversion",
+          "priceBand": "about R28,000 to R65,000",
+          "note": "water that does not care about Eskom"
+        }
+      ]
+    },
+    "sacleaningpros.co.za": {
+      "handle": "sacleaningpros",
+      "bioShort": "Cleaning teams that show up, on a price you can see before you book. Gauteng.",
+      "bioLong": "Domestic, office, deep and move-out cleaning across Johannesburg and Pretoria. Every service has a published price band — no quote games. Vetted teams, own equipment, fixed scope per visit.",
+      "cta": "See prices and book",
+      "hashtags": [
+        "#CleaningServicesJohannesburg",
+        "#CleaningGauteng",
+        "#DeepClean",
+        "#MoveOutCleaning",
+        "#OfficeCleaning",
+        "#CleaningServicesSA",
+        "#PretoriaCleaning",
+        "#HomeCleaning",
+        "#CarpetCleaning",
+        "#SpringClean"
+      ],
+      "subreddits": [
+        "r/southafrica",
+        "r/Johannesburg",
+        "r/CleaningTips"
+      ],
+      "pinterestBoards": [
+        "Cleaning prices Gauteng",
+        "Deep clean checklists",
+        "Move-out cleaning"
+      ],
+      "seasonalHooks": {
+        "8": "dust month — windows and filters take the hit",
+        "9": "spring clean bookings double, book two weeks out",
+        "12": "December move-outs and deposit inspections"
+      },
+      "mistakes": [
+        "booking by the hour with no scope, so the bathroom never gets done",
+        "paying for a deep clean that is really a standard clean with a different invoice",
+        "no inventory list on a move-out clean, so the deposit fight starts anyway",
+        "letting a team bring no equipment and billing you for yours",
+        "skipping the walkthrough, so nobody agreed what finished looks like"
+      ],
+      "checks": [
+        "get the room-by-room scope in writing before the first visit",
+        "confirm who supplies chemicals and equipment",
+        "ask whether the team is the same people each week",
+        "check whether windows, inside-oven and inside-fridge are in or extra",
+        "agree the walkthrough and sign-off before anyone leaves"
+      ]
+    },
+    "sawatersolutions.co.za": {
+      "handle": "sawatersolutions",
+      "bioShort": "Boreholes, tanks, pumps and purification. Gauteng. Prices published.",
+      "bioLong": "Borehole drilling, water tank installation, pressure pumps, filtration and purification across Gauteng. Published price bands by depth, tank size and system type so you can plan the spend before the first site visit.",
+      "cta": "Get a water quote",
+      "hashtags": [
+        "#BoreholeDrilling",
+        "#WaterTanksSA",
+        "#WaterStorage",
+        "#BoreholeGauteng",
+        "#WaterPurification",
+        "#RainwaterHarvesting",
+        "#WaterCrisisSA",
+        "#PressurePump",
+        "#JojoTank",
+        "#WaterSecurity"
+      ],
+      "subreddits": [
+        "r/southafrica",
+        "r/Johannesburg",
+        "r/Homesteading"
+      ],
+      "pinterestBoards": [
+        "Water storage setups",
+        "Borehole costs SA",
+        "Rainwater harvesting"
+      ],
+      "seasonalHooks": {
+        "8": "driest month — the month tanks run empty",
+        "9": "pre-summer: get storage in before restrictions",
+        "11": "rain season, the cheapest time to start harvesting"
+      },
+      "mistakes": [
+        "drilling before a geohydrological siting report, then paying for a dry hole",
+        "a tank stand built for a full tank's weight only on paper",
+        "a pressure pump sized for the tap, not for the house",
+        "no first-flush diverter on a harvesting setup, so the tank collects roof grit",
+        "treating borehole water for taste and ignoring the actual lab test"
+      ],
+      "checks": [
+        "ask for the siting report and the dry-hole policy in writing",
+        "get the yield in litres per hour, tested and recorded",
+        "ask for a water lab analysis before buying any filtration",
+        "confirm the stand's rated load against the full tank weight",
+        "check whether the pump warranty survives running dry"
+      ]
+    },
+    "saelectricalpros.co.za": {
+      "handle": "saelectricalpros",
+      "bioShort": "Electricians, CoC certificates and backup power. Gauteng. Published prices.",
+      "bioLong": "Registered electrical work across Johannesburg and Pretoria: Certificates of Compliance, DB board upgrades, fault finding, backup power and surge protection. Price bands published per job type.",
+      "cta": "Book an electrician",
+      "hashtags": [
+        "#ElectricianJohannesburg",
+        "#CoCCertificate",
+        "#ElectricalCompliance",
+        "#DBBoard",
+        "#SurgeProtection",
+        "#ElectricianGauteng",
+        "#BackupPower",
+        "#LoadShedding",
+        "#ElectricalFaultFinding",
+        "#PretoriaElectrician"
+      ],
+      "subreddits": [
+        "r/southafrica",
+        "r/Johannesburg",
+        "r/AskElectricians"
+      ],
+      "pinterestBoards": [
+        "Electrical costs SA",
+        "CoC checklist",
+        "Backup power"
+      ],
+      "seasonalHooks": {
+        "6": "geyser failure season, and the DB board that caused it",
+        "10": "first lightning — surge protection or replace the appliances",
+        "12": "property transfers need a valid CoC before the deeds office"
+      },
+      "mistakes": [
+        "buying a CoC without an inspection, which is worthless at claim time",
+        "adding solar to a DB board that was already at capacity",
+        "no surge protection on the main, then a R40,000 appliance claim",
+        "earth leakage tripping treated as a nuisance instead of a fault",
+        "an extension wired in without updating the CoC on record"
+      ],
+      "checks": [
+        "ask for the electrician's registration number and check it",
+        "a CoC must follow a physical inspection, never a drive-by",
+        "confirm whether remedial work is quoted before or after the inspection",
+        "ask what the earth leakage test actually measured",
+        "get the DB board schedule drawn and labelled"
+      ]
+    },
+    "sabuildingsupplies.co.za": {
+      "handle": "sabuildingsupplies",
+      "bioShort": "Building materials, Gauteng. Published prices, delivered to site.",
+      "bioLong": "Cement, bricks, sand, stone, timber, roofing and hardware supplied across Gauteng with published price bands and site delivery. Quantity help included — tell us the job, we tell you the list.",
+      "cta": "Get a materials list and price",
+      "hashtags": [
+        "#BuildingMaterialsSA",
+        "#BuildingSuppliesGauteng",
+        "#Cement",
+        "#BricksSA",
+        "#ConstructionSupplies",
+        "#BuildersMerchant",
+        "#RenovationSA",
+        "#DIYSouthAfrica",
+        "#RoofSheeting",
+        "#SandAndStone"
+      ],
+      "subreddits": [
+        "r/southafrica",
+        "r/DIY",
+        "r/Construction"
+      ],
+      "pinterestBoards": [
+        "Material costs SA",
+        "Build cost guides",
+        "Renovation planning"
+      ],
+      "seasonalHooks": {
+        "4": "pre-winter: get the roof and plaster work done dry",
+        "9": "build season opens, prices and lead times move",
+        "12": "December shutdown — order before the yards close"
+      },
+      "mistakes": [
+        "ordering cement by the bag count instead of by the mix ratio",
+        "sand bought by the load with no idea of the cubic metres delivered",
+        "no wastage allowance, then a second delivery fee for 40 bricks",
+        "storing cement on a slab with no cover through a storm week",
+        "mixing brick batches mid-wall so the colour steps"
+      ],
+      "checks": [
+        "get the quantity schedule, not just a price per unit",
+        "confirm cubic metres on sand and stone, in writing",
+        "ask what the delivery fee is per drop and per extra drop",
+        "check the cement strength class against the job",
+        "ask about the returns policy on unopened stock"
+      ]
+    },
+    "saconstructionservices.co.za": {
+      "handle": "saconstructionservices",
+      "bioShort": "Builders and renovations, Gauteng. Price bands published per job.",
+      "bioLong": "Extensions, renovations, boundary walls, slabs and new builds across Gauteng. We publish rate bands per square metre and per job so your budget is real before the first drawing.",
+      "cta": "Get a build quote",
+      "hashtags": [
+        "#ConstructionSouthAfrica",
+        "#BuildersJohannesburg",
+        "#HomeRenovationSA",
+        "#HouseExtension",
+        "#BuildingContractor",
+        "#RenovationGauteng",
+        "#NewBuildSA",
+        "#BoundaryWall",
+        "#ConcreteSlab",
+        "#PropertyValueSA"
+      ],
+      "subreddits": [
+        "r/southafrica",
+        "r/Construction",
+        "r/HomeImprovement"
+      ],
+      "pinterestBoards": [
+        "Build costs per sqm SA",
+        "Renovation before and after",
+        "Extension plans"
+      ],
+      "seasonalHooks": {
+        "3": "the dry window to pour slabs and plaster",
+        "9": "build season: lock contractors in before the rush",
+        "11": "storm season — roof work needs weather days in the programme"
+      },
+      "mistakes": [
+        "a quote with no bill of quantities, so every change is a variation claim",
+        "no NHBRC or council approval on work that needed it",
+        "paying a deposit that buys materials nobody counted",
+        "no programme with weather days, so the overrun is automatic",
+        "snag list agreed verbally and never written down"
+      ],
+      "checks": [
+        "insist on a bill of quantities with the quote",
+        "confirm which drawings and council approvals are included",
+        "tie payments to completed stages, never to dates",
+        "ask for the programme with weather days shown",
+        "agree the retention percentage held until the snag list closes"
+      ]
+    },
+    "saaluminiumglass.co.za": {
+      "handle": "saaluminiumglass",
+      "bioShort": "Aluminium windows, doors, stacking and frameless glass. Gauteng, prices shown.",
+      "bioLong": "Aluminium windows and doors, sliding and stacking systems, frameless glass, shopfronts and balustrades across Gauteng. Price bands published per square metre and per opening.",
+      "cta": "Get a glass and aluminium quote",
+      "hashtags": [
+        "#AluminiumWindows",
+        "#FramelessGlass",
+        "#StackingDoors",
+        "#AluminiumDoors",
+        "#GlassBalustrade",
+        "#WindowsSA",
+        "#HomeRenovationSA",
+        "#Shopfront",
+        "#SlidingDoors",
+        "#AluminiumGauteng"
+      ],
+      "subreddits": [
+        "r/southafrica",
+        "r/HomeImprovement",
+        "r/architecture"
+      ],
+      "pinterestBoards": [
+        "Aluminium window ideas",
+        "Frameless glass",
+        "Stacking door costs"
+      ],
+      "seasonalHooks": {
+        "5": "winter: where the draught is actually coming from",
+        "10": "hail season — toughened versus laminated matters now",
+        "11": "storm season: check the drainage slots in your frames"
+      },
+      "mistakes": [
+        "ordering sizes off a tape measure instead of a site check of the opening",
+        "clear float glass where SANS requires safety glass",
+        "no drainage slots in the sill, so the frame holds water",
+        "stacking doors on a track the floor cannot keep level",
+        "a frameless shower with no hinge allowance, so the door fouls the tile"
+      ],
+      "checks": [
+        "ask which SANS glass class is being supplied and why",
+        "confirm the frame system name and its powder-coat warranty",
+        "check whether the opening is measured on site before ordering",
+        "ask whether removal, making good and sealing are included",
+        "get the glass thickness and whether it is toughened or laminated"
+      ]
+    },
+    "sapoolpros.co.za": {
+      "handle": "sapoolpros",
+      "bioShort": "Pool building, maintenance, pumps and repairs. Gauteng. Published prices.",
+      "bioLong": "New pools, renovations, weekly maintenance, pumps, filters and leak repair across Johannesburg and Pretoria. Monthly plan bands by pool size and job prices published up front.",
+      "cta": "Get a pool quote",
+      "hashtags": [
+        "#PoolServiceJohannesburg",
+        "#PoolMaintenance",
+        "#SwimmingPoolSA",
+        "#PoolRenovation",
+        "#PoolPump",
+        "#PoolGauteng",
+        "#FibreglassPool",
+        "#PoolCleaning",
+        "#PoolRepair",
+        "#SummerReadySA"
+      ],
+      "subreddits": [
+        "r/southafrica",
+        "r/Johannesburg",
+        "r/pools"
+      ],
+      "pinterestBoards": [
+        "Pool costs SA",
+        "Pool renovation ideas",
+        "Pool care guides"
+      ],
+      "seasonalHooks": {
+        "9": "spring green-pool recovery season",
+        "10": "everyone books at once — service now, swim in November",
+        "11": "storm runoff wrecks balance, test twice a week"
+      },
+      "mistakes": [
+        "a weekly plan priced by phone call instead of by actual pool volume",
+        "chasing chlorine when the real problem is pH and stabiliser",
+        "a pump sized for the pipework someone else installed",
+        "topping up a leak for a year instead of pressure-testing the lines",
+        "marbelite re-coated over a surface that needed chipping out first"
+      ],
+      "checks": [
+        "ask how the plan price was derived from your pool's volume",
+        "confirm whether chemicals are included or billed separately",
+        "get the pump model and its rated flow against your filter",
+        "ask for a pressure test before any leak quote",
+        "check what the visit actually covers, task by task"
+      ]
+    },
+    "webdesignexpertssa.co.za": {
+      "handle": "webdesignexpertssa",
+      "bioShort": "Websites that rank and publish their own prices. Built in days, not months. South Africa.",
+      "bioLong": "We build local service websites on a proven engine: real price bands on every page, hundreds of suburb and service pages indexed from day one, Google Business Profile set up, and an optional social robot that posts for you daily. Eight of our own sites run on it.",
+      "cta": "Book a free site audit",
+      "hashtags": [
+        "#WebDesignSouthAfrica",
+        "#SEOSouthAfrica",
+        "#SmallBusinessSA",
+        "#LocalSEO",
+        "#WebDesignJohannesburg",
+        "#WebsiteDesignSA",
+        "#GoogleBusinessProfile",
+        "#LeadGeneration",
+        "#DigitalMarketingSA",
+        "#WebsiteThatRanks"
+      ],
+      "subreddits": [
+        "r/southafrica",
+        "r/smallbusiness",
+        "r/Entrepreneur",
+        "r/webdev"
+      ],
+      "pinterestBoards": [
+        "Website design SA",
+        "Local SEO tips",
+        "Small business websites"
+      ],
+      "seasonalHooks": {
+        "1": "new-year budget season, when quotes get compared",
+        "9": "spring: the busiest quote month of the year for trades",
+        "11": "book the build now or you are launching in February"
+      },
+      "mistakes": [
+        "paying monthly for a website you do not own and cannot export",
+        "a beautiful site with no service pages, so it ranks for the business name and nothing else",
+        "hiding prices, which doubles the number of unqualified calls you take",
+        "no Google Business Profile, which is where most local searches actually end",
+        "a site built once and never added to, so it stops ranking inside a year"
+      ],
+      "checks": [
+        "ask who owns the domain and the hosting account — it should be you",
+        "ask how many indexable pages the site will actually have",
+        "ask whether Google Business Profile setup is included",
+        "ask for the page speed score on mobile, not desktop",
+        "ask what happens to the site if you stop paying"
+      ],
+      "servicesFallback": [
+        {
+          "name": "Local Service Website",
+          "priceBand": "from about R8,000 once-off",
+          "note": "service pages, suburb pages, published prices, quote form"
+        },
+        {
+          "name": "Multi-Suburb SEO Site",
+          "priceBand": "about R12,000 to R18,000",
+          "note": "hundreds of indexable pages across your whole service area"
+        },
+        {
+          "name": "E-Commerce Store Build",
+          "priceBand": "from about R15,000",
+          "note": "products, payments and delivery set up and tested"
+        },
+        {
+          "name": "Website Redesign and Rescue",
+          "priceBand": "about R6,500 to R12,000",
+          "note": "keep the rankings, replace everything else"
+        },
+        {
+          "name": "Google Business Profile Setup",
+          "priceBand": "about R1,800 once-off",
+          "note": "the highest-converting free channel in local search"
+        },
+        {
+          "name": "Local SEO Monthly",
+          "priceBand": "about R2,500 to R6,000 a month",
+          "note": "content, citations and rank tracking"
+        },
+        {
+          "name": "Daily Social Posting Robot",
+          "priceBand": "about R2,500 a month",
+          "note": "posts your services and prices across ten channels, every day"
+        },
+        {
+          "name": "Website Care Plan",
+          "priceBand": "about R650 a month",
+          "note": "hosting, backups, updates and uptime monitoring"
+        },
+        {
+          "name": "Page Speed and Core Web Vitals Fix",
+          "priceBand": "about R3,500 once-off",
+          "note": "the technical reason you rank below someone worse"
+        },
+        {
+          "name": "Schema and Rich Results Setup",
+          "priceBand": "about R2,200 once-off",
+          "note": "prices, reviews and FAQs showing directly in Google"
+        },
+        {
+          "name": "Lead Capture and WhatsApp Routing",
+          "priceBand": "about R2,800 once-off",
+          "note": "every enquiry lands already saying which job and which suburb"
+        },
+        {
+          "name": "Site Audit and Action Plan",
+          "priceBand": "free, then about R1,500 to implement",
+          "note": "what is wrong, what it costs, what to fix first"
+        }
+      ]
+    }
+  },
+  "otherAssets": {
+    "pixquo.com": {
+      "handle": "pixquo",
+      "bioShort": "462 spreadsheet and printable templates. Instant download.",
+      "cta": "Browse templates",
+      "hashtags": [
+        "#SpreadsheetTemplates",
+        "#ExcelTemplates",
+        "#SmallBusinessTools",
+        "#DigitalDownloads",
+        "#Etsy"
+      ],
+      "note": "Brand assets are rendered, but it stays out of the daily geo rotation: a global digital store does not post \"in Akasia\". Needs its own content mode (audience + use case instead of suburb) before it joins.",
+      "socialRotation": false
+    }
+  }
+}
