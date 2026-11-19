@@ -124,7 +124,47 @@ every other channel in this list combined. It is sixty seconds a day.
 
 ## Running it daily for free
 
-`.github/workflows/daily-social.yml` is ready to go.
+**Currently live: the local scheduler.** Two Windows tasks, `SA Social AM` (08:00)
+and `SA Social PM` (17:00), run `run-daily.cmd` — the same pipeline the GitHub
+workflow runs. Registered and verified `Ready`.
+
+```bash
+schtasks /query /tn "SA Social AM"
+```
+
+```bash
+schtasks /run /tn "SA Social AM"
+```
+
+Output goes to `run-daily.log` (gitignored). To add a channel, uncomment its `set`
+line near the bottom of `run-daily.cmd`. To stop it:
+`schtasks /delete /tn "SA Social AM" /f`.
+
+The one limitation: the PC has to be awake at 08:00 or 17:00. A missed run is not
+lost — the queue is dated and a post that never went out stays pending, so the next
+run catches up.
+
+### Moving to GitHub Actions when you want to
+
+`.github/workflows/daily-social.yml` exists locally and is valid, but it is **not on
+GitHub** and is deliberately left untracked. The account's OAuth token lacks the
+`workflow` scope, and GitHub rejects any push that touches `.github/workflows` —
+which blocks *every* push on that branch, cards included, until the commit is gone.
+
+To switch over:
+
+```bash
+gh auth refresh -s workflow
+```
+
+```bash
+git add -f .github/workflows/daily-social.yml && git commit -m "Add the daily posting schedule" && git push
+```
+
+Then disable the local tasks so the two schedules do not both post:
+`schtasks /delete /tn "SA Social AM" /f` and the same for `SA Social PM`.
+
+### What the workflow does
 
 1. Make `_SOCIAL/` a **public** GitHub repo — public repos get unlimited free
    Actions minutes; private gets 2,000/month and this run costs 3–6 minutes a day.
