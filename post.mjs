@@ -382,4 +382,27 @@ for (const p of due) {
 }
 
 console.log(`\nsent ${sent} · skipped ${skipped} · failed ${failed}`);
+
+/* Google Business Profile is the channel that converts best for a local trade, and it is
+   the one a human has to paste by hand. Two files buried under out/_gbp-manual/ is enough
+   friction to make that daily minute not happen — so collapse today's pastes into one file
+   that is always at the same path, and print that path last where the run cannot hide it. */
+if (!DRY) {
+  const today = fs.existsSync(GBP_DIR)
+    ? fs.readdirSync(GBP_DIR).filter((f) => f.startsWith(DATE)).sort()
+    : [];
+  if (today.length) {
+    const roll = path.join(ROOT, 'TODAY-GBP.md');
+    fs.writeFileSync(roll, [
+      `# Google Business Profile — paste these today (${DATE})`,
+      ``,
+      `${today.length} update(s). For each: open the profile, Add update, paste the text,`,
+      `attach the image at the path given, set the button. About 60 seconds each.`,
+      ``,
+      ...today.map((f) => fs.readFileSync(path.join(GBP_DIR, f), 'utf8'))
+    ].join('\n'));
+    console.log(`\nPASTE TODAY -> ${roll}  (${today.length} profile update(s))`);
+  }
+}
+
 if (failed && !sent) process.exitCode = 1;

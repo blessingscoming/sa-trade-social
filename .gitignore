@@ -10,6 +10,13 @@ MONEY-STACK.md
 leadbuyers.mjs
 out/_leadbuyers/
 
+# The account's OAuth token has no `workflow` scope, and GitHub rejects the WHOLE push —
+# card images included — if any commit touches this path. One such commit silently blocked
+# every push on the branch, which would have left Instagram and Pinterest fetching nothing
+# forever. Ignored so it cannot be staged by accident. To switch to Actions:
+#   gh auth refresh -s workflow  &&  git add -f .github/workflows/daily-social.yml
+.github/
+
 # scratch
 .render/
 node_modules/
@@ -17,3 +24,9 @@ node_modules/
 
 # local scheduler log
 run-daily.log
+
+# regenerated every run from out/_gbp-manual/ — a working file, not source
+TODAY-GBP.md
+
+# run-daily.cmd's concurrency lock
+.lock/

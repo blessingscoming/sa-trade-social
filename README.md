@@ -108,12 +108,27 @@ No code changes, no redeploy:
 | telegram | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` |
 | facebook | `FB_PAGE_ID`, `FB_PAGE_TOKEN` |
 | instagram | `IG_USER_ID`, `FB_PAGE_TOKEN`, `ASSET_BASE` |
-| pinterest | `PINTEREST_TOKEN`, `PINTEREST_BOARD_ID`, `ASSET_BASE` |
+| pinterest | `PINTEREST_TOKEN`, `PINTEREST_BOARD_ID`, `ASSET_BASE` — **read the warning below first** |
 | devto | `DEVTO_API_KEY` |
 | reddit | `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET`, `REDDIT_USERNAME`, `REDDIT_PASSWORD`, `REDDIT_SUBREDDIT` |
 | x | `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_SECRET` |
 
 A channel with no keys is skipped with a one-line reason. It never fails the run.
+
+### Pinterest: a token is not enough, and a working-looking token is the trap
+
+Checked against Pinterest's own access-tier docs on 2026-11-20. The API is free. It is gated by an
+**app review**, not by money — and there are two tiers:
+
+- **Trial** access (what you get after a first app review) creates pins fine. Every one is a
+  **sandbox object visible only to its creator.** The adapter will report success, the log will say
+  it posted, and **nobody will ever see the pin.**
+- **Standard** access is the tier that posts publicly. It needs the approved Trial app plus a
+  **screen recording of the OAuth flow and the API call**, then a manual review.
+- Create Pin needs four scopes, not one: `boards:read boards:write pins:read pins:write`.
+
+So after setting `PINTEREST_TOKEN`, **open one pin in a logged-out browser before believing the
+log.** That check is the only thing that distinguishes Standard from Trial from the outside.
 
 **Google Business Profile is the manual one, and it is the one that makes the
 most money.** Google does not give a free write API. The engine does everything
@@ -139,6 +154,30 @@ schtasks /run /tn "SA Social AM"
 Output goes to `run-daily.log` (gitignored). To add a channel, uncomment its `set`
 line near the bottom of `run-daily.cmd`. To stop it:
 `schtasks /delete /tn "SA Social AM" /f`.
+
+**One run at a time.** `run-daily.cmd` takes a `.lock` directory first and exits quietly if
+another run holds it — rendering takes minutes and longer on a loaded machine, so the 08:00 and
+17:00 runs can overlap, and two runs both committing means one loses to `.git/index.lock` and
+dies mid-pipeline. A skipped run costs nothing: the queue is dated, so anything unsent stays
+pending. If a run is killed hard, clear the lock by hand:
+
+```bash
+rmdir "C:/Users/acewu/Desktop/SRARTER/_SOCIAL/.lock"
+```
+
+**Never edit `run-daily.cmd` while a run is in flight.** cmd.exe re-reads the batch file from a
+byte offset after each command, so inserting lines makes it resume mid-line and the run dies
+silently part-way through. This happened on 2026-11-20: the run stopped after the queue check and
+posted nothing. Nothing was lost — the cards were already rendered and the queue is dated — but
+the log just ends, with no error. Wait for `---- done ----` before editing.
+
+### The one file to open each morning
+
+After every run, `TODAY-GBP.md` at the root of this folder holds **all** of today's Google
+Business Profile updates in one place — text, image path and button target for each. It is
+rewritten each run and the run prints its path last. Open that one file, paste each update, done.
+This exists because GBP is the highest-converting channel here *and* the only manual one; two
+files buried under `out/_gbp-manual/` was enough friction to make a daily minute not happen.
 
 The one limitation: the PC has to be awake at 08:00 or 17:00. A missed run is not
 lost — the queue is dated and a post that never went out stays pending, so the next

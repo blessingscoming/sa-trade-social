@@ -91,6 +91,7 @@ const BODY = `InterVar, Inter, 'Segoe UI', system-ui, sans-serif`;
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 let renders = 0;
+const failures = [];
 function shot(html, out, w, h, assetDir) {
   if (!CHROME) throw new Error('No Chrome or Edge found. Install Chrome or run with --no-png.');
   // write the page INTO the brand's asset dir so relative mark.svg / hero-pat.svg resolve
@@ -102,7 +103,9 @@ function shot(html, out, w, h, assetDir) {
       '--headless=new', '--disable-gpu', '--hide-scrollbars', '--no-first-run',
       '--force-device-scale-factor=1', '--virtual-time-budget=4000',
       `--window-size=${w},${h}`, `--screenshot=${out}`, pathToFileURL(tmp).href
-    ], { stdio: 'ignore', timeout: 60000 });
+      // 60s was too tight: this machine also runs the product factories, and a card that
+      // renders in 2s idle took over 60 with ~100 competing Chrome processes.
+    ], { stdio: 'ignore', timeout: 180000 });
   } finally {
     fs.rmSync(tmp, { force: true });
   }
@@ -374,8 +377,18 @@ if (args.includes('--posts')) {
     for (const f of POST_FORMATS.filter((x) => want.includes(x.file))) {
       const html = page(f.w, f.h, f.css(b), shell(cardInner(b, p, { bullets: f.bullets })));
       const out = path.join(OUT, b.domain, 'posts', DATE, `${p.id}-${f.file}.png`);
-      shot(html, out, f.w, f.h, assetDir);
-      console.log(`  ${p.domain}  ${p.channel}/${f.file}  ${p.title.slice(0, 50)}`);
+      /* One slow Chrome must not cost the whole day's cards. The machine is shared with the
+         product factories, and on 2026-11-20 a single `spawnSync ... ETIMEDOUT` at the 60s
+         cap killed the process with 7 of 14 cards rendered — so every brand after sasolarhub
+         silently had no image. Carry on instead: post.mjs already falls back to a text post
+         when the card is missing, and the next run re-renders it. */
+      try {
+        shot(html, out, f.w, f.h, assetDir);
+        console.log(`  ${p.domain}  ${p.channel}/${f.file}  ${p.title.slice(0, 50)}`);
+      } catch (e) {
+        failures.push(`${p.domain} ${p.channel}/${f.file}`);
+        console.log(`  !! ${p.domain}  ${p.channel}/${f.file}  SKIPPED — ${e.code || String(e.message).slice(0, 60)}`);
+      }
     }
   }
 }
@@ -388,3 +401,7 @@ if (args.includes('--list')) {
 }
 
 if (renders) console.log(`\n${renders} images rendered in ${((Date.now() - t0) / 1000).toFixed(1)}s -> ${OUT}`);
+if (failures.length) {
+  console.log(`${failures.length} card(s) did not render — those posts go out as text, and the next run retries:`);
+  for (const f of failures) console.log(`  - ${f}`);
+}

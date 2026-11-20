@@ -16,6 +16,22 @@ chcp 65001 >nul
 cd /d "%~dp0"
 
 set LOG=%~dp0run-daily.log
+
+REM -- 0. one run at a time -------------------------------------------------
+REM  Rendering takes minutes, and longer when the machine is busy, so the 08:00
+REM  and 17:00 runs can overlap. Two runs both commit and push: one loses to
+REM  .git/index.lock and dies mid-pipeline. `mkdir` fails atomically if the
+REM  directory exists, which is the whole lock. Stale locks are cleared by hand:
+REM  rmdir "%~dp0.lock".
+mkdir "%~dp0.lock" 2>nul
+if errorlevel 1 (
+  echo. >> "%LOG%"
+  echo ======== %DATE% %TIME% ======== >> "%LOG%"
+  echo SKIPPED - another run holds .lock. Nothing lost: the queue is dated, so >> "%LOG%"
+  echo anything not sent stays pending and the next run picks it up. >> "%LOG%"
+  endlocal
+  exit /b 0
+)
 echo. >> "%LOG%"
 echo ======== %DATE% %TIME% ======== >> "%LOG%"
 
@@ -57,4 +73,5 @@ git diff --staged --quiet || git commit -q -m "posted: %DATE%" >> "%LOG%" 2>&1
 git push -q >> "%LOG%" 2>&1
 
 echo ---- done ---- >> "%LOG%"
+rmdir "%~dp0.lock" 2>nul
 endlocal
