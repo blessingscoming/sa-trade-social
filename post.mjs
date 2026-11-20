@@ -399,7 +399,17 @@ if (!DRY) {
       `${today.length} update(s). For each: open the profile, Add update, paste the text,`,
       `attach the image at the path given, set the button. About 60 seconds each.`,
       ``,
-      ...today.map((f) => fs.readFileSync(path.join(GBP_DIR, f), 'utf8'))
+      /* The per-domain file is written at send time, so if the card had not rendered yet it
+         holds a "run assets.mjs" placeholder. Resolve it here instead — by roll-up time the
+         card usually exists, and this is the one file a human opens every morning. */
+      ...today.map((f) => {
+        const body = fs.readFileSync(path.join(GBP_DIR, f), 'utf8');
+        if (!body.includes('(run: node assets.mjs')) return body;
+        const domain = f.replace(`${DATE}-`, '').replace(/\.md$/, '');
+        const dir = path.join(ROOT, 'out', domain, 'posts', DATE);
+        const card = fs.existsSync(dir) ? fs.readdirSync(dir).find((n) => n.endsWith('-gbp.png')) : null;
+        return card ? body.replace(/\(run: node assets\.mjs[^)]*\)/g, path.join(dir, card)) : body;
+      })
     ].join('\n'));
     console.log(`\nPASTE TODAY -> ${roll}  (${today.length} profile update(s))`);
   }
